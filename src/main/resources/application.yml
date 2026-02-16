@@ -1,0 +1,32 @@
+spring:
+    datasource:
+        url: ${DATABASE_URL:jdbc:postgresql://localhost:5433/whatsapp-clone}
+        username: ${DATABASE_USERNAME:postgres}
+        password: ${DATABASE_PASSWORD:1234567}
+        driver-class-name: org.postgresql.Driver
+    sql:
+        init:
+            platform: postgres
+    jpa:
+        hibernate:
+            ddl-auto: update
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database: postgresql
+    flyway:
+        enabled: false
+        locations: classpath:db/migration
+        baseline-on-migrate: true
+        sql-migration-prefix: V
+        sql-migration-separator: __
+        sql-migration-suffixes: .sql
+        baseline-version: 1
+    servlet.multipart:
+        enabled: true
+        max-file-size: 50MB
+        max-request-size: 50MB
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: ${ISSUER_URI:http://localhost:8180/realms/whatsapp-clone}
+                    jwk-set-uri: ${JWK_SET_URI:http://localhost:8180/realms/whatsapp-clone/protocol/openid-connect/certs}

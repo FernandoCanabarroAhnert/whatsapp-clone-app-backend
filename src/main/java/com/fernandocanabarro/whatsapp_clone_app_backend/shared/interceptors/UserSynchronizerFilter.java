@@ -1,0 +1,37 @@
+package com.fernandocanabarro.whatsapp_clone_app_backend.shared.interceptors;
+
+import java.io.IOException;
+
+import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.fernandocanabarro.whatsapp_clone_app_backend.user.services.UserSynchronizerService;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+
+@Component
+@RequiredArgsConstructor
+public class UserSynchronizerFilter extends OncePerRequestFilter {
+
+    private final UserSynchronizerService userSynchronizerService;
+
+    @Override
+    protected void doFilterInternal(@NonNull HttpServletRequest request, 
+                                    @NonNull HttpServletResponse response, 
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+        if (!(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
+            JwtAuthenticationToken token = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+            this.userSynchronizerService.synchronizeWithIdentityProvider(token.getToken());
+        }
+        filterChain.doFilter(request, response);
+    }
+
+}
