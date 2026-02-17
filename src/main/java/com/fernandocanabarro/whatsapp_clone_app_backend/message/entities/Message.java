@@ -36,7 +36,7 @@ public class Message extends BaseAuditingEntity {
     @Id
     @SequenceGenerator(name = "message_seq", sequenceName = "message_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message_seq")
-    private String id;
+    private Long id;
     @Column(columnDefinition = "TEXT")
     private String content;
     @Enumerated(EnumType.STRING)
@@ -50,5 +50,6 @@ public class Message extends BaseAuditingEntity {
     private String senderId;
     @Column(name = "receiver_id", nullable = false)
     private String receiverId;
+    private String blobName;
 
 }

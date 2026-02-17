@@ -30,3 +30,7 @@ spring:
                 jwt:
                     issuer-uri: ${ISSUER_URI:http://localhost:8180/realms/whatsapp-clone}
                     jwk-set-uri: ${JWK_SET_URI:http://localhost:8180/realms/whatsapp-clone/protocol/openid-connect/certs}
+azure:
+    storage:
+        connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
+        blob-container-name: ${AZURE_STORAGE_BLOB_CONTAINER_NAME}
