@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.fernandocanabarro.whatsapp_clone_app_backend.user.dtos.UserResponseDto;
 import com.fernandocanabarro.whatsapp_clone_app_backend.user.entities.User;
 
 @Service
@@ -33,6 +34,17 @@ public class UserMapper {
 
         user.setLastSeen(LocalDateTime.now());
         return user;
+    }
+
+    public UserResponseDto toUserResponseDto(User user) {
+        UserResponseDto userResponseDto = new UserResponseDto();
+        userResponseDto.setId(user.getId());
+        userResponseDto.setFirstName(user.getFirstName());
+        userResponseDto.setLastName(user.getLastName());
+        userResponseDto.setEmail(user.getEmail());
+        userResponseDto.setLastSeen(user.getLastSeen());
+        userResponseDto.setIsOnline(user.isUserOnline());
+        return userResponseDto;
     }
 
 }

@@ -16,6 +16,9 @@ import com.fernandocanabarro.whatsapp_clone_app_backend.message.enums.MessageSta
 import com.fernandocanabarro.whatsapp_clone_app_backend.message.enums.MessageType;
 import com.fernandocanabarro.whatsapp_clone_app_backend.message.mappers.MessageMapper;
 import com.fernandocanabarro.whatsapp_clone_app_backend.message.repositories.MessageRepository;
+import com.fernandocanabarro.whatsapp_clone_app_backend.notification.enums.NotificationType;
+import com.fernandocanabarro.whatsapp_clone_app_backend.notification.models.Notification;
+import com.fernandocanabarro.whatsapp_clone_app_backend.notification.services.NotificationService;
 import com.fernandocanabarro.whatsapp_clone_app_backend.shared.exceptions.ResourceNotFoundException;
 import com.fernandocanabarro.whatsapp_clone_app_backend.shared.services.BlobStorageService;
 
@@ -29,6 +32,7 @@ public class MessageService {
     private final ChatRepository chatRepository;
     private final MessageMapper messageMapper;
     private final BlobStorageService blobStorageService;
+    private final NotificationService notificationService;
 
     @Transactional
     public void saveMessage(MessageRequestDto request) {
@@ -42,6 +46,16 @@ public class MessageService {
         message.setReceiverId(request.getReceiverId());
         message.setState(MessageState.SENT);
         this.messageRepository.save(message);
+        Notification notification = Notification.builder()
+            .chatId(chat.getId())
+            .content(request.getContent())
+            .senderId(request.getSenderId())
+            .receiverId(request.getReceiverId())
+            .chatName(chat.getChatName(request.getSenderId()))
+            .messageType(request.getType())
+            .type(NotificationType.MESSAGE)
+            .build();
+        this.notificationService.sendNotification(request.getReceiverId(), notification);
     }
 
     @Transactional(readOnly = true)
@@ -57,6 +71,13 @@ public class MessageService {
             .orElseThrow(() -> new ResourceNotFoundException("Chat with id " + chatId + " not found"));
         String receiverId = this.getReceiverId(chat, authentication);
         this.messageRepository.setMessagesToSeenByChat(MessageState.SEEN.toString(), chatId);
+        Notification notification = Notification.builder()
+            .chatId(chat.getId())
+            .senderId(getSenderId(chat, authentication))
+            .receiverId(receiverId)
+            .type(NotificationType.SEEN)
+            .build();
+        this.notificationService.sendNotification(receiverId, notification);
     }
 
     @Transactional
@@ -75,6 +96,15 @@ public class MessageService {
         message.setState(MessageState.SENT);
         message.setBlobName(blobName);
         this.messageRepository.save(message);
+        Notification notification = Notification.builder()
+            .chatId(chat.getId())
+            .senderId(senderId)
+            .receiverId(receiverId)
+            .messageType(MessageType.IMAGE)
+            .type(NotificationType.IMAGE)
+            .media(this.blobStorageService.downloadBlob(blobName))
+            .build();
+        this.notificationService.sendNotification(receiverId, notification);
     }
 
     private String getReceiverId(Chat chat, Authentication authentication) {
