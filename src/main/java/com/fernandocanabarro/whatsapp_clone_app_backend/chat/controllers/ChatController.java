@@ -14,11 +14,13 @@ import com.fernandocanabarro.whatsapp_clone_app_backend.chat.dtos.ChatResponseDt
 import com.fernandocanabarro.whatsapp_clone_app_backend.chat.services.ChatService;
 import com.fernandocanabarro.whatsapp_clone_app_backend.shared.dtos.StringResponseDto;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/chats")
 @RequiredArgsConstructor
+@Tag(name = "Chats", description = "Endpoints for managing chats")
 public class ChatController {
 
     private final ChatService chatService;

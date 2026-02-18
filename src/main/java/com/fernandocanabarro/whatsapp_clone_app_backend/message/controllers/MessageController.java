@@ -20,11 +20,14 @@ import com.fernandocanabarro.whatsapp_clone_app_backend.message.dtos.MessageRequ
 import com.fernandocanabarro.whatsapp_clone_app_backend.message.dtos.MessageResponseDto;
 import com.fernandocanabarro.whatsapp_clone_app_backend.message.services.MessageService;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/messages")
 @RequiredArgsConstructor
+@Tag(name = "Messages", description = "Endpoints for managing messages")
 public class MessageController {
 
     private final MessageService messageService;
@@ -39,6 +42,7 @@ public class MessageController {
     @ResponseStatus(HttpStatus.CREATED)
     public void uploadMedia(
         @RequestParam(name = "chat-id") String chatId,
+        @Parameter
         @RequestParam MultipartFile file,
         Authentication authentication
     ) {
